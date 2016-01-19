@@ -65,5 +65,5 @@ config :logger, level: :info
 #- import_config "prod.secret.exs"
 
 # App Config
-config: :clio, Clio.Endpoint, secret_key_base: System.get_env("SECRET_KEY_BASE"), force_ssl: [hsts: true]
+config: :clio, Clio.Endpoint, secret_key_base: System.get_env("SECRET_KEY_BASE")
 config: :clio, Clio.Repo, adapter: Ecto.Adapters.Postgres, url: System.get_env("DATABASE_URL"), size: 20
