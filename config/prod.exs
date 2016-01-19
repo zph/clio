@@ -62,4 +62,8 @@ config :logger, level: :info
 
 # Finally import the config/prod.secret.exs
 # which should be versioned separately.
-import_config "prod.secret.exs"
+#- import_config "prod.secret.exs"
+
+# App Config
+config: :clio, Clio.Endpoint, secret_key_base: System.get_env("SECRET_KEY_BASE"), force_ssl: [hsts: true]
+config: :clio, Clio.Repo, adapter: Ecto.Adapters.Postgres, url: System.get_env("DATABASE_URL"), size: 20
