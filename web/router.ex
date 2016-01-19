@@ -1,7 +1,23 @@
 defmodule Clio.Router do
   use Clio.Web, :router
 
+  pipeline :basic_auth do
+    plug BasicAuth, realm: "Logplex Endpoint", username: System.get_env("BASIC_AUTH_USER"), password: System.get_env("BASIC_AUTH_PASSWORD")
+  end
+
+  pipeline :api do
+    plug :basic_auth
+
+    plug :accepts, ["json"]
+  end
+
+  pipeline :logplex do
+    plug :accepts, ["application/logplex-1"]
+  end
+
   pipeline :browser do
+    plug :basic_auth
+
     plug :accepts, ["html"]
     plug :fetch_session
     plug :fetch_flash
@@ -9,8 +25,10 @@ defmodule Clio.Router do
     plug :put_secure_browser_headers
   end
 
-  pipeline :api do
-    plug :accepts, ["json"]
+  scope "/logplex", Clio do
+    pipe_through :basic_auth
+    pipe_through :logplex
+    post "/new", LogplexController, :create
   end
 
   scope "/", Clio do

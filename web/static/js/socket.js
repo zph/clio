@@ -4,6 +4,8 @@
 // To use Phoenix channels, the first step is to import Socket
 // and connect at the socket path in "lib/my_app/endpoint.ex":
 import {Socket} from "phoenix"
+import $ from "jquery"
+import _ from "lodash"
 
 let socket = new Socket("/socket", {params: {token: window.userToken}})
 
@@ -54,7 +56,50 @@ let socket = new Socket("/socket", {params: {token: window.userToken}})
 socket.connect()
 
 // Now that you are connected, you can join channels with a topic:
-let channel = socket.channel("topic:subtopic", {})
+let channel = socket.channel("rooms:lobby", {})
+let chatInput = $('#chat-input')
+
+chatInput.on("keypress", event => {
+  if(event.keyCode === 13 && chatInput.val() != ""){
+    channel.push("new_msg", {body: chatInput.val()})
+    chatInput.val("")
+  }
+})
+
+let setupDisplayBox = (name, selector) => {
+
+  let messagesSet = []
+  let msgCount = 0
+
+  channel.on(name, payload => {
+    let $messagesContainer = $(selector)
+    let $count = $(`${selector}_count`)
+
+    let maxCount = 2000
+    if(messagesSet.length >= maxCount){
+      messagesSet.shift()
+    }
+
+    msgCount = msgCount + 1
+
+    let txt
+    if(typeof(payload.body) === "object"){
+      txt = JSON.stringify(payload.body)
+    } else {
+      txt = payload.body
+    }
+
+    messagesSet.push(`[${msgCount}] [${Date.now()}] ${txt}`)
+
+    $count.html(messagesSet.length)
+    $messagesContainer.html(messagesSet.join("<br/>"))
+  })
+}
+
+setupDisplayBox("new_msg", "#messages")
+setupDisplayBox("metrics", "#metrics")
+setupDisplayBox("log_lines", "#log_lines")
+
 channel.join()
   .receive("ok", resp => { console.log("Joined successfully", resp) })
   .receive("error", resp => { console.log("Unable to join", resp) })
