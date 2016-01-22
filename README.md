@@ -12,4 +12,8 @@ To start your Phoenix app:
   2. Create and migrate your database with `mix ecto.create && mix ecto.migrate`
   3. Start Phoenix endpoint with `mix phoenix.server`
 
+Note:
+
+Heroku does not conform to RFC5424 per their docs. Structured-data is left out of the spec and not replaced with a nil value.
+
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
