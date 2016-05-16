@@ -85,7 +85,7 @@ https://tools.ietf.org/html/rfc5424
     "<190>1 2016-01-17T03:26:12.297505+00:00 host app web.1 - source=rack-timeout id=fa9f7998-7d41-4286-82c4-4e332fbd8b8e wait=17ms timeout=20000ms service=43ms state=completed"
     [pri_ver_raw, time, host, app, proc, msgid, data] = String.split(line, " ", parts: 7)
 
-    [_, x, y] = Regex.scan(~r/<(\d{1,3})>(\d)/, pri_ver_raw) |> List.first
+    [_, x, y] = Regex.run(~r/<(\d{1,3})>(\d{1,3})/, pri_ver_raw)
 
     %{pri: x, version: y, timestamp: time, hostname: host, app_name: app, procid: proc, msgid: msgid, structured_data: parse_structured_data(data)}
 
